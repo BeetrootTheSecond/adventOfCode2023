@@ -166,7 +166,7 @@ const symbols = [...new Set(dataTable.flat())].filter(cell => {
 
 
 let engineParts = [];
-
+let gears = [];
 
 
 for (let rowIndex = 0; rowIndex < dataTable.length; rowIndex++) {
@@ -201,48 +201,81 @@ let starOne = vaildEngineParts.reduce((sum, part) => sum + part.partNumber, 0);
 
 console.log(`StarOne ${starOne}`);
 
+//star two 
+//group by sybmol 
+let groupSybmols = engineParts.reduce((groups, part) => {
+    part.symbolsPosition.forEach(symbolPos => {
+        let currentGroup = groups[symbolPos] || [];
+        currentGroup.push(part);
+        groups[symbolPos] = currentGroup;
+    });
+
+    return groups;
+}, {})
+
+console.log(groupSybmols);
+
+// filter to gear potential 
+for (const sybmolPos in groupSybmols) {
+    let currentSybmol = groupSybmols[sybmolPos];
+    if (currentSybmol.length == 2) {
+        // check what sybmol it is 
+        let splitPos = sybmolPos.split('-');
+        let symbol = dataTable[splitPos[0]][splitPos[1]];
+        if (symbol == '*') {
+            let gearRatio = currentSybmol[0].partNumber * currentSybmol[1].partNumber;
+            gears.push(gearRatio);
+        }
+
+    }
+}
+
+let starTwo = gears.reduce((sum, gearRatio) => sum + gearRatio, 0);
+
+console.log(`StarTwo  ${starTwo}`);
+
 
 function isAdjacent(rowIndex, cellIndex) {
 
     //check top
     if (rowIndex > 0) {
         //check top
-        if (symbols.includes(dataTable[rowIndex - 1][cellIndex])) { return true; }
+        if (symbols.includes(dataTable[rowIndex - 1][cellIndex])) { return `${rowIndex - 1}-${cellIndex}` /*true*/; }
         //check top left
         if (cellIndex > 0) {
-            if (symbols.includes(dataTable[rowIndex - 1][cellIndex - 1])) { return true; }
+            if (symbols.includes(dataTable[rowIndex - 1][cellIndex - 1])) { return `${rowIndex - 1}-${cellIndex - 1}` /*true*/; }
         }
 
         //check top right 
         if (cellIndex < dataTable[rowIndex - 1].length - 1) {
-            if (symbols.includes(dataTable[rowIndex - 1][cellIndex + 1])) { return true; }
+            if (symbols.includes(dataTable[rowIndex - 1][cellIndex + 1])) { return `${rowIndex - 1}-${cellIndex + 1}` /*true*/; }
         }
 
     }
     //check bottom
     if (rowIndex < dataTable.length - 1) {
         //check bottom
-        if (symbols.includes(dataTable[rowIndex + 1][cellIndex])) { return true; }
+        if (symbols.includes(dataTable[rowIndex + 1][cellIndex])) { return `${rowIndex + 1}-${cellIndex}` /*true*/; }
         //check bottom left
         if (cellIndex > 0) {
-            if (symbols.includes(dataTable[rowIndex + 1][cellIndex - 1])) { return true; }
+            if (symbols.includes(dataTable[rowIndex + 1][cellIndex - 1])) { return `${rowIndex + 1}-${cellIndex - 1}` /*true*/; }
         }
 
         //check bottom right 
         if (cellIndex < dataTable[rowIndex + 1].length - 1) {
-            if (symbols.includes(dataTable[rowIndex + 1][cellIndex + 1])) { return true; }
+            if (symbols.includes(dataTable[rowIndex + 1][cellIndex + 1])) { return `${rowIndex + 1}-${cellIndex + 1}` /*true*/; }
         }
 
     }
 
     //check left
     if (cellIndex > 0) {
-        if (symbols.includes(dataTable[rowIndex][cellIndex - 1])) { return true; }
+        if (symbols.includes(dataTable[rowIndex][cellIndex - 1])) { return `${rowIndex}-${cellIndex - 1}` /*true*/; }
     }
 
     //check right 
     if (cellIndex < dataTable[rowIndex].length - 1) {
-        if (symbols.includes(dataTable[rowIndex][cellIndex + 1])) { return true; }
+        if (symbols.includes(dataTable[rowIndex][cellIndex + 1])) { return `${rowIndex}-${cellIndex + 1}` /*true*/; }
     }
 
     return false;
@@ -252,7 +285,8 @@ function isAdjacent(rowIndex, cellIndex) {
 function nextCell(row, cell) {
     let enginePart = {
         partNumber: '',
-        vaild: false
+        vaild: false,
+        symbolsPosition: []
     }
 
 
@@ -263,9 +297,16 @@ function nextCell(row, cell) {
         }
 
         enginePart.partNumber = `${dataTable[row][cell]}${enginePart.partNumber}`;
-        if (!enginePart.vaild) {
-            enginePart.vaild = isAdjacent(row, cell);
+
+        let findAdjacent = isAdjacent(row, cell);
+        if (findAdjacent != false) {
+            enginePart.symbolsPosition.push(findAdjacent);
         }
+
     }
+    if (enginePart.symbolsPosition.length > 0) {
+        enginePart.vaild = true;
+    }
+    enginePart.symbolsPosition = [...new Set(enginePart.symbolsPosition)];
     return enginePart;
 }
