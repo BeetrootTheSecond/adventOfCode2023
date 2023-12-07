@@ -1,6 +1,6 @@
 import { data, sample } from "./day5Data";
 
-let sampleMode = true;
+let sampleMode = false;
 const currentData = sampleMode ? sample : data;
 
 //parse source string 
@@ -257,3 +257,57 @@ let starOne = seedToLocationsStarOne.reduce((currentLowest, seedJourney) => {
 console.log(` Star One ${starOne.location}`);
 
 
+// Star Two 
+
+function FindSeedLocation(seed: number) {
+    let soil = AlmanacChangeLookup(seed, "seedToSoil");
+    let fertilizer = AlmanacChangeLookup(soil, "soilToFertilizer");
+    let water = AlmanacChangeLookup(fertilizer, "fertilizerToWater");
+    let light = AlmanacChangeLookup(water, "waterToLight");
+    let temperature = AlmanacChangeLookup(light, "lightToTemperature");
+    let humidity = AlmanacChangeLookup(temperature, "temperatureToHumidity");
+    let location = AlmanacChangeLookup(humidity, "humidityToLocation");
+
+    let journey: seedToLocation = {
+        seed: seed,
+        soil,
+        fertilizer,
+        water,
+        light,
+        temperature,
+        humidity,
+        location
+    }
+    return journey;
+
+}
+
+let StarTwoAlmanacMap = StarOneAlmanacMap;
+
+let Seeds = StarTwoAlmanacMap.seeds;
+StarTwoAlmanacMap.seeds = [];
+
+let closestLocation: number = 0;
+
+for (let index = 0; index < Seeds.length; index++) {
+    const startOfRange = Seeds[index];
+    const Range = Seeds[index + 1];
+
+    for (let rangeIndex = 0; rangeIndex < Range; rangeIndex++) {
+        let seedLocation = FindSeedLocation(startOfRange + rangeIndex);
+        if (closestLocation == 0) {
+            closestLocation = seedLocation.location
+        }
+
+        if (seedLocation.location < closestLocation) {
+            closestLocation = seedLocation.location
+        }
+
+    }
+    index++;
+}
+
+
+// find lowest 
+
+console.log(` Star Two ${closestLocation}`);
