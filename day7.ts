@@ -16,6 +16,7 @@ enum handtype {
 }
 
 interface hand {
+    handTypeString: string;
     cards: string[],
     bid: number,
     handType: handtype,
@@ -27,23 +28,24 @@ const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
         return groups;
     }, {} as Record<K, T[]>);
 
-function calculateHandType(cards: string[]): handtype {
+function calculateHandType(cards: string[], starTwoMode: boolean = false): handtype {
     let cardGroups = groupBy(cards, i => i);
     let cardGroupKeys = Object.keys(cardGroups);
 
-    if (Object.keys(cardGroups).length == 5) {
+
+    if (cardGroupKeys.length == 5) {
         return handtype.highCard;
     }
-    if (Object.keys(cardGroups).length == 4) {
+    if (cardGroupKeys.length == 4) {
         return handtype.onePair;
     }
-    if (Object.keys(cardGroups).length == 3) {
+    if (cardGroupKeys.length == 3) {
         if (cardGroups[cardGroupKeys[0]].length == 3 || cardGroups[cardGroupKeys[1]].length == 3 || cardGroups[cardGroupKeys[2]].length == 3) {
             return handtype.threeOfAKind;
         }
         return handtype.twoPair;
     }
-    if (Object.keys(cardGroups).length == 2) {
+    if (cardGroupKeys.length == 2) {
 
         if (cardGroups[cardGroupKeys[0]].length == 4 || cardGroups[cardGroupKeys[1]].length == 4) {
             return handtype.fourOfAKind;
@@ -54,12 +56,15 @@ function calculateHandType(cards: string[]): handtype {
     return handtype.fiveOfAKind;
 }
 
-function convertCardToNumber(card: string) {
+function convertCardToNumber(card: string, starTwoMode: boolean = false) {
 
     if (card == 'T') {
         return 10;
     }
     if (card == 'J') {
+        if (starTwoMode) {
+            return 1;
+        }
         return 11;
     }
     if (card == 'Q') {
@@ -112,7 +117,7 @@ let orderedHands = hands.sort((aHand, bHand) => {
         }
     }
 
-    return 1;
+    return 0;
 })
 
 let starOne = 0;
@@ -128,3 +133,131 @@ orderedHands.forEach((hand, handIndex) => {
 //console.log(orderedHands);
 console.log(`Star One ${starOne}`);
 
+
+
+//star Two 
+
+function starTwoCalulateHandType(cards: string[]) {
+    let cardGroups = groupBy(cards, i => i);
+    let cardGroupKeys = Object.keys(cardGroups);
+
+    let cardType = calculateHandType(cards);
+
+    if (cardGroupKeys.includes('J')) // look for JOKER
+    {
+        //how many JOKERS
+        if (cardGroupKeys.length == 5) {
+            //theres a JOKER so its one pair 
+            return handtype.onePair;
+        }
+        if (cardGroupKeys.length == 4) { // one pair
+            //three of a kind
+            return handtype.threeOfAKind;
+        }
+        if (cardGroupKeys.length == 3) { //two pair or three of a kind
+            //check how many Jokers
+            if (cardGroups['J'].length == 2) {
+                return handtype.fourOfAKind;
+            }
+            if (cardGroups['J'].length == 3) {
+                return handtype.fourOfAKind;
+            }
+            //if (cardGroups['J'].length == 1) {
+            if (cardGroups[cardGroupKeys[0]].length == 3 || cardGroups[cardGroupKeys[1]].length == 3 || cardGroups[cardGroupKeys[2]].length == 3) {
+                return handtype.fourOfAKind;
+            }
+
+            return handtype.fullHouse;
+        }
+        if (cardGroupKeys.length == 2) {
+            // fourOfAKind or full house
+            return handtype.fiveOfAKind;
+        }
+        if (cardGroupKeys.length == 1) {
+            //all JOKERS nothing changes
+            return handtype.fiveOfAKind;
+        }
+
+    }
+    return cardType;
+}
+
+let starTwoHands = hands.map(hand => {
+    hand.handType = starTwoCalulateHandType(hand.cards);
+    return hand;
+})
+
+
+let orderedHandsStarTwo = starTwoHands.sort((aHand, bHand) => {
+    if (aHand.handType < bHand.handType) {
+        return 1;
+    }
+
+    if (aHand.handType > bHand.handType) {
+        return -1;
+    }
+
+    if (aHand.handType == bHand.handType) {
+        for (let index = 0; index < 5; index++) {
+            let aCard = convertCardToNumber(aHand.cards[index], true);
+            let bCard = convertCardToNumber(bHand.cards[index], true);
+            if (aCard == bCard) {
+                continue;
+            }
+            if (aCard > bCard) {
+                return 1;
+            }
+            return -1;
+
+        }
+    }
+    return 1;
+})
+
+function enumLookup(handTypelookup: handtype) {
+    switch (handTypelookup) {
+        case handtype.fiveOfAKind: {
+            return 'fiveOfAKind';
+        }
+        case handtype.fourOfAKind: {
+            return 'fourOfAKind';
+        }
+        case handtype.fullHouse: {
+            return 'fullHouse';
+        }
+        case handtype.threeOfAKind: {
+            return 'threeOfAKind';
+        }
+        case handtype.twoPair: {
+            return 'twoPair';
+        }
+        case handtype.onePair: {
+            return 'onePair';
+        }
+        case handtype.highCard: {
+            return 'highCard';
+        }
+    }
+
+}
+
+orderedHandsStarTwo.map(hands => {
+    hands.cards = [hands.cards.join(' ')];
+    hands.handTypeString = enumLookup(hands.handType)
+
+    return hands;
+});
+//console.table(orderedHandsStarTwo);
+
+let starTwo = 0;
+//set Ranks
+orderedHandsStarTwo.forEach((hand, handIndex) => {
+    orderedHandsStarTwo[handIndex].rank = handIndex + 1;
+    let score = orderedHandsStarTwo[handIndex].bid * orderedHandsStarTwo[handIndex].rank;
+    starTwo += score;
+})
+
+
+
+//console.log(orderedHands);
+console.log(`Star Two ${starTwo}`);
