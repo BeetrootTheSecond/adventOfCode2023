@@ -87,7 +87,8 @@ let hands = currentData.split('\n').map(rawHand => {
         cards,
         bid: parseInt(splitHand[1]),
         handType: calculateHandType(cards),
-        rank: 0
+        rank: 0,
+        handTypeString: ""
     }
     return processHand;
 })
