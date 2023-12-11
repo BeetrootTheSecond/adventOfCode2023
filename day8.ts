@@ -1,7 +1,9 @@
 import { data, sample3 } from "./day8Data";
 
-let sampleMode = true;
+let sampleMode = false;
 const currentData = sampleMode ? sample3 : data;
+
+const STARONE = false;
 
 interface nodemapMap {
     [x: string]: nodemapNode;
@@ -53,25 +55,68 @@ let currentNode = startingNode;
 let navigationIndex = 0;
 let traversingSteps = [];
 
-while (currentNode != endNode) {
-    traversingSteps.push(currentNode);
-    let node = nodeMap[currentNode];
+if (STARONE) {
+    while (currentNode != endNode) {
+        traversingSteps.push(currentNode);
+        let node = nodeMap[currentNode];
 
-    currentNode = node.left;
-    if (navigation[navigationIndex] == 'R') {
-        currentNode = node.right;
+        currentNode = node.left;
+        if (navigation[navigationIndex] == 'R') {
+            currentNode = node.right;
+        }
+
+        navigationIndex++;
+        if (navigation.length == navigationIndex) {
+            navigationIndex = 0;
+        }
+
     }
 
-    navigationIndex++;
-    if (navigation.length == navigationIndex) {
-        navigationIndex = 0;
-    }
-
+    console.log(`StarOne : ${traversingSteps.length}`);
 }
 
-console.log(`StarOne : ${traversingSteps.length}`);
+let traversingStepsCount = 0;
+// star Two
+//find all rows which end with 'A'
+if (!STARONE) {
+
+    //let nodeMapSet = new Set(nodeMap);
+    let startingNodes = Object.keys(nodeMap).filter(nodeName => [...nodeName][2] == 'A');
+
+    //console.table(startingNodes);
+
+    let currentNodes = startingNodes;
+
+    while (!currentNodes.every(nodeName => ([...nodeName][2] == 'Z'))) {
+
+        //traversingSteps.push(currentNodes);
+        //console.table(currentNodes);
+        traversingStepsCount++;
+        if (traversingStepsCount % 1000000 == 0) {
+            console.log(traversingStepsCount);
+        }
+
+        currentNodes = currentNodes.map(currentNode => {
+            //traversingSteps.push(currentNode);
+            let node = nodeMap[currentNode];
+
+            currentNode = node.left;
+            if (navigation[navigationIndex] == 'R') {
+                currentNode = node.right;
+            }
 
 
 
+            return currentNode;
+        })
+
+        navigationIndex++;
+        if (navigation.length == navigationIndex) {
+            navigationIndex = 0;
+        }
 
 
+    }
+
+    console.log(`Star Two : ${traversingSteps.length}`);
+}
