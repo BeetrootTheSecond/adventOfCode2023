@@ -1,14 +1,38 @@
-export let sample= `.....
+export let sample = `.....
 .S-7.
 .|.|.
 .L-J.
 .....`;
-export let sample2= `-L|F7
+export let sample2 = `-L|F7
 7S-7|
 L|7||
 -L-J|
 L|-JF`;
-export let data= `FL7-|-FJ7.J.FF-.|7.JFF|F--7LJ-F--.--|.FF77LFL..7-F|-F|--L77F7-F7FFF--7---7FFL|7FJ7|J7.FF--F|7-F-7.L|FF|.FF7-J77F7FF7FF|.FF|7F7|-F.FJJFLJJFF-
+export let sample3 = `..F7.
+.FJ|.
+SJ.L7
+|F--J
+LJ...`
+export let sample4 = `...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........`;
+export let sample5 = `FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L`
+export let data = `FL7-|-FJ7.J.FF-.|7.JFF|F--7LJ-F--.--|.FF77LFL..7-F|-F|--L77F7-F7FFF--7---7FFL|7FJ7|J7.FF--F|7-F-7.L|FF|.FF7-J77F7FF7FF|.FF|7F7|-F.FJJFLJJFF-
 F-7.F-JF-7L7-|L-JF7--JLJJFL|.L|.L7|-7--J||.J.FL|FLL|LJL7L|-FL7.|FLJL.J7JJL7J|JL-.FJ.LJJ..||FJF--FF7|-J-FJJJ.|||J7.L|J||-|JL|-J-.LJ-7L-.|FFJJ
 LFJ-LJJL-FJJ.LF7F|J.|7LJL|7.-7L-7.7.L7LLFL7|LL7LF7J|-FJFF|-7J.F-777JF7||FF7.L.F7LF77.F-7J-7..LLF7-F.7LF-J7JF--J|LF-JLLJ||FLL-JJF--L7||-FJ7--
 .L|F||7L7|.FL-|7||-7-LJ77LL7|LFJ|-J.F77.L|J7.FL--JF-7LFLJ.L.|L-LJL|7LJ-JF7JFL7J7LLF7F|LL7.7-7.L|L|JFJ.7.LF-L|L77F-7F-JL7JL7L7.|L.L|.F|.L|L-|
